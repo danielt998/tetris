@@ -1,0 +1,259 @@
+#include <ncurses.h>
+#include <unistd.h>
+#include <stdlib.h>//think this is a c lib, should switch to a c++ one
+#include "piece.cxx"
+//#include <iostream>//ncurses includes this
+//time.h
+
+#define DELAY 1000000 //in miliseconds?
+#define WIDTH 10 //width of screen
+#define HEIGHT 20 //should use consts instead
+#define DEBUG
+#define TIME_OUT 200
+int board[WIDTH][HEIGHT];
+piece * Piece;
+
+//int piece_type;//?
+
+//int rotatedtimes;//this is a temporary variable which should get reset for
+//every new piece
+
+bool new_piece = true;
+/*Don't think we want this here as it is now part of Piece
+struct block
+{
+  int x;
+  int y;
+};
+*/
+
+///////////////////////////put this into a .h file
+void plot_piece(block, block, block, block);
+void key_press_handler();
+void unplot_piece(block, block, block, block);
+////////////////////////////////////////////
+
+void put_new_piece()
+{
+  Piece = new piece();
+  plot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+}
+
+bool check_block_free(int x, int y)
+{
+  if (y > HEIGHT - 1 || x < 0 || x > WIDTH - 1 || board[x][y] != 0)
+    return false;
+  return true;
+}
+
+bool check_free(int newax, int neway, int newbx, int newby,
+                int newcx, int newcy, int newdx, int newdy)
+{
+  block newa; block newb; block newc; block newd;
+  newa.x = newax; newa.y = neway; newb.x = newbx; newb.y = newby;
+  newc.x = newcx; newc.y = newcy; newd.x = newdx; newd.y = newdy;
+
+  if (check_block_free(newa.x, newa.y) && check_block_free(newb.x, newb.y) 
+      && check_block_free(newc.x, newc.y) && check_block_free(newd.x, newd.y))
+    return true;
+  return false;
+}
+
+void move_down()
+{
+  unplot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  //want to put the following in the object
+  Piece->move_down();
+  plot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+}
+
+void move_right()
+{
+  unplot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  Piece->move_right();
+  plot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+}
+
+void move_left()
+{
+  unplot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  Piece->move_left();
+  plot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+}
+
+bool is_game_over()
+{
+  //prototype
+  return false;
+}
+
+void save_location()
+{
+  board[Piece->a.x][Piece->a.y] = 1;
+  board[Piece->b.x][Piece->b.y] = 1;
+  board[Piece->c.x][Piece->c.y] = 1;
+  board[Piece->d.x][Piece->d.y] = 1;
+}
+
+//put these into one with char as a parameter?
+void plot_piece(piece* given_piece)
+{
+  mvaddch(given_piece.y, given_piece.x, 'X');
+  mvaddch(given_piece.y, given_piece.x, 'X');
+  mvaddch(given_piece.y, given_piece.x, 'X');
+  mvaddch(given_piece.y, given_piece.x, 'X');
+  refresh();
+}
+  
+void unplot_piece(piece* given_piece)
+{ 
+  mvaddch(given_piece.y, given_piece.x, '.');
+  mvaddch(given_piece.y, given_piece.x, '.');
+  mvaddch(given_piece.y, given_piece.x, '.');
+  mvaddch(given_piece.y, given_piece.x, '.');
+  refresh();
+}
+
+void rotate_right(int piecetype/*remove this param*/, int rotatedtimes)
+{
+  unplot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+/*  switch (piece_type)
+  {
+    default:;
+  }
+*/
+
+}
+
+void rotate_left()
+{
+}
+
+void clear_row(int row)
+{
+  for (int i = 0; i < WIDTH; i++)
+  {
+    board[row][i] = 0;
+  }
+  for (int i = row - 1; i < HEIGHT; i++)
+  {
+    for (int j = 0; j < WIDTH; j++)
+      board[i + 1][j + 1] = board[i][j];
+  }
+}
+
+void clear_lines()
+{
+  //would be more efficient to do backwards... (bottom up)
+  for (int i = 0; i < HEIGHT; i++)
+  {
+    bool stop = false;
+    for (int j = 0; j < WIDTH; j++)
+    {
+      if (board[i][j] == 0)
+      {
+        stop = true;
+        break;
+      }
+    }
+    if (! stop)
+    {
+      clear_row(i);
+    }
+  }
+}
+
+bool move()//returns false when game is over 
+{
+  clear_lines();
+  if (new_piece)
+  {
+    put_new_piece();
+    new_piece = false;
+  }
+  else if (check_free(Piece->a.x, Piece->a.y + 1, Piece->b.x, Piece->b.y + 1, Piece->c.x, Piece->c.y + 1, Piece->d.x, Piece->d.y + 1))
+    move_down();
+  else
+  {    
+    new_piece = true;
+    save_location();
+  }
+#ifdef DEBUG
+  mvprintw(0, 20, "a.x: %d", Piece->a.x);
+  mvprintw(1, 20, "a.y: %d", Piece->a.y);
+  mvprintw(2, 20, "b.x: %d", Piece->b.x);
+  mvprintw(3, 20, "b.y: %d", Piece->b.y);
+  mvprintw(4, 20, "c.x: %d", Piece->c.x);
+  mvprintw(5, 20, "c.y: %d", Piece->c.y);
+  mvprintw(6, 20, "d.x: %d", Piece->d.x);
+  mvprintw(7, 20, "d.y: %d", Piece->d.y);
+  for (int i = 0; i++ < WIDTH;)
+    for (int j = 0; j++ < HEIGHT;)
+      mvprintw(j + 8, i + 30, "%d", board[i][j]);
+  refresh();
+#endif
+  key_press_handler();
+  key_press_handler();
+  key_press_handler();
+  key_press_handler();
+  key_press_handler();
+
+  return ! is_game_over();
+}
+
+void key_press_handler()
+{
+  char ch = getch();
+#ifdef DEBUG
+  mvprintw(8, 20, "key: %d", ch);
+#endif
+  switch(ch)
+  {
+    case 4:
+     if (check_free(Piece->a.x - 1, Piece->a.y, Piece->b.x - 1, Piece->b.y, Piece->c.x - 1, Piece->c.y, Piece->d.x - 1, Piece->d.y))
+       move_left();
+     break;
+    case 5:
+     if (check_free(Piece->a.x + 1, Piece->a.y, Piece->b.x + 1, Piece->b.y, Piece->c.x + 1, Piece->c.y, Piece->d.x + 1, Piece->d.y))
+       move_right();
+     break;
+    case 2:
+      if (check_free(Piece->a.x, Piece->a.y + 1, Piece->b.x, Piece->b.y + 1, Piece->c.x, Piece->c.y + 1, Piece->d.x, Piece->d.y + 1))
+        move_down();
+      else
+        save_location();
+  }
+}
+
+void initialise_game()
+{
+  //fill up array with 0s and plot initial empty squares
+  for (int i = 0; i < WIDTH; i++)
+    for (int j = 0; j < HEIGHT; j++)
+    {
+      board[i][j] = 0;
+      mvaddch(j, i, '.');
+    }
+  refresh();
+}
+
+void initialise_curses()
+{
+  initscr();      /* Start curses mode */
+  cbreak();       /* Line buffering disabled. Pass on everything. */
+  keypad(stdscr, TRUE);
+  noecho();
+  timeout(TIME_OUT);
+  //curs_set(FALSE);
+}
+
+int main(int argc, char **argv)
+{
+  initialise_curses();
+  initialise_game();
+  //then keep looping until game is over
+  while (move())
+    ;
+
+  endwin();
+}

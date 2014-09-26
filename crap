@@ -1,0 +1,338 @@
+  if (piecetype == 2);
+  {
+    if (rotatedtimes == 3)
+    {
+      block1X = block3X - 1;
+      block1Y = block3Y - 1;
+      block2X = block3X - 1;
+      block2Y = block3Y;
+      block4X = block3X + 1;
+      block4Y = block3Y;
+      //rotatedtimes = 99;////////////////////
+    }
+    if (rotatedtimes == 2)
+    {
+      //++block1X;
+      block1X = block1X - 2;
+      --block2X;
+      ++block2Y;
+      ++block4X;
+      --block4Y;
+      rotatedtimes = 3;
+    }
+    if (rotatedtimes == 1)
+    {
+      //++block1X;
+      ++block1X;
+      block1Y = block1Y + 2;
+      block2X = block2X + 2;
+      ++block2Y;
+      ++block3X;
+      --block4Y;
+      rotatedtimes = 2;
+
+    }
+
+
+
+    if (rotatedtimes == 0)
+
+    {
+
+      block1X = block1X + 2;
+
+
+
+      ++block2X;
+
+      --block2Y;
+
+
+
+      --block4X;
+
+      ++block4Y;
+
+      //goes into bottom
+
+      rotatedtimes = 1;
+
+    }
+
+
+
+  }//end piecetype == 2 (not 1)!!
+
+
+
+  if(piecetype == 3)
+
+  {
+
+    if(rotatedtimes == 3)
+
+    {
+
+      --block2X;
+
+      ++block2Y;
+
+      block1X = block1X + 2;
+
+      --block4Y;
+
+      ++block4X;
+
+      rotatedtimes = 98;
+
+    }
+
+    if(rotatedtimes == 2)
+
+    {
+
+      block1Y = block1Y - 2;
+
+      ++block2X;
+
+      --d;
+
+      --block4X;
+
+      ++block4Y;
+
+      rotatedtimes = 3;
+
+    }
+
+    if(rotatedtimes == 1)
+
+    {
+
+      block1X = block1X - 2;
+
+      --block2X;
+
+      --block2Y;
+
+      ++block4X;
+
+      ++block4Y;
+
+      rotatedtimes = 2;
+
+    }
+
+    if(rotatedtimes == 0)
+
+    {
+
+      block1Y = block1Y + 2;
+
+      ++block2X;
+
+      ++block2Y;
+
+      --block4X;
+
+      --block4Y;
+
+      rotatedtimes = 1;
+
+    }
+
+    if(rotatedtimes==98)
+
+     rotatedtimes = 0;
+
+  }//end piecetype==3
+
+
+
+  if(piecetype == 5)
+
+  {
+
+    if(rotatedtimes == 1)
+
+    {
+
+      block3X = block3X - 2;
+
+      block2Y = block2Y - 2;
+
+      rotatedtimes = 99;
+
+    }
+
+    if(rotatedtimes == 0)
+
+    {
+
+      block3X = block3X+2;
+
+      block2Y = block2Y+2;
+
+      rotatedtimes = 1;
+
+    }
+
+}
+
+
+
+  if(piecetype == 4)
+
+  {
+
+    if(rotatedtimes == 1)
+
+    {
+
+      block1Y = block1Y-2;
+
+      block4X = block4X+2;
+
+      rotatedtimes = 99;//here
+
+      //rotatedtimes = 0 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+    }
+
+    if(rotatedtimes == 0)//here
+
+    {
+
+      block1Y = block1Y + 2;
+
+      block4X = block4X - 2;
+
+      rotatedtimes = 1;
+
+    }
+
+  }
+
+
+
+  if(piecetype == 6)
+
+  {
+
+    if(rotatedtimes == 1)
+
+    {
+
+      --block1X;
+
+      ++block1Y;
+
+      ++block3X;
+
+      --block3Y;
+
+      h = block4X + 2;
+
+      block4Y = block4Y - 2;
+
+      rotatedtimes = 99;
+
+    }
+
+    if(rotatedtimes == 0)
+
+    {
+
+      ++block1X;
+
+      --block1Y;
+
+      --block3X;
+
+      ++block3Y;
+
+      block4X = block4X - 2;
+
+      block4Y = block4Y + 2;
+
+      rotatedtimes = 1
+
+    }
+
+  }
+
+  if(piecetype == 0)
+
+  {
+
+    if(rotatedtimes == 3)
+
+    {
+
+      ++block1X;
+
+      --block1Y;
+
+      ++block4X;
+
+      ++block4Y;
+
+      --block2X;
+
+      --block2Y;
+
+      rotatedtimes = 99;
+
+    }
+
+    if(rotatedtimes == 2)
+
+    {
+
+      --block4X;
+
+      --block4Y;
+
+      rotatedtimes = 3;
+
+    }
+
+
+
+    if(rotatedtimes == 1)
+
+    {
+
+      --block1X;
+
+      ++block1Y;
+
+      rotatedtimes = 2;
+
+    }
+
+
+    if(rotatedtimes == 0)
+
+    {
+
+      ++block2X;
+
+      ++block2Y;
+
+      rotatedtimes = 1;
+
+    }
+
+  }//==0
+
+
+
+  if(rotatedtimes == 99)
+
+    rotatedtimes = 0;
+
+
+
+  convert()
+  } 

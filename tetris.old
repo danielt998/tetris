@@ -1,0 +1,291 @@
+#include <ncurses.h>
+#include <unistd.h>
+#include <stdlib.h>//think this is a c lib, should switch to a c++ one
+//#include <iostream>
+//time.h
+
+#define DELAY 1000000 //in miliseconds?
+#define WIDTH 10 //width of screen
+#define HEIGHT 20 //should use consts instead
+#define DEBUG
+#define TIME_OUT 200
+int board[WIDTH][HEIGHT];
+int piece_type;
+int rotatedtimes;//this is a temporary variable which should get reset for
+//every new piece
+
+bool new_piece = true;
+struct block
+{
+  int x;
+  int y;
+};
+
+///////////////////////////put this into a .h file
+void plot_piece(block, block, block, block);
+void key_press_handler();
+////////////////////////////////////////////
+block a;//each of these represents one square of the current piece.
+block b;
+block c;
+block d;
+
+void put_new_piece()
+{
+  rotatedtimes = 0;
+  piece_type = rand() % 7 + 1;//check that this works correctly!
+  //Starting positions for each block of each piece. If WIDTH (though not HEIGHT) is changed, 
+  //then this must also be.
+#if WIDTH == 10
+  switch (piece_type)
+  {
+    case 1:
+      a.x = 4; a.y = 0; b.x = 5; b.y = 0; c.x = 4; c.y = 1; d.x = 5; d.y = 1;
+      break;
+    case 2:
+      a.x = 4; a.y = 0; b.x = 4; b.y = 1; c.x = 5; c.y = 1; d.x = 6; d.y = 1;
+      break;
+    case 3:
+      a.x = 6; a.y = 0; b.x = 4; b.y = 1; c.x = 5; c.y = 1; d.x = 6; d.y = 1;
+      break;
+    case 4:
+      a.x = 5; a.y = 0; b.x = 4; b.y = 1; c.x = 5; c.y = 1; d.x = 6; d.y = 1;
+      break;
+    case 5:
+      a.x = 4; a.y = 0; b.x = 5; b.y = 0; c.x = 5; c.y = 1; d.x = 6; d.y = 1;
+      break;
+    case 6:
+      a.x = 5; a.y = 0; b.x = 6; b.y = 0; c.x = 4; c.y = 1; d.x = 5; d.y = 1;
+      break;
+    case 7:
+      a.x = 4; a.y = 0; b.x = 5; b.y = 0; c.x = 6; c.y = 0; d.x = 7; d.y = 0;
+      break;
+  }
+#endif
+  plot_piece(a, b, c, d);
+}
+
+//put these into one with char as a parameter?
+void plot_piece(block block1, block block2, block block3, block block4)
+{
+  mvaddch(block1.y, block1.x, 'X');
+  mvaddch(block2.y, block2.x, 'X');
+  mvaddch(block3.y, block3.x, 'X');
+  mvaddch(block4.y, block4.x, 'X');
+  refresh();
+}
+
+void unplot_piece(block block1, block block2, block block3, block block4)
+{
+  mvaddch(block1.y, block1.x, '.');
+  mvaddch(block2.y, block2.x, '.');
+  mvaddch(block3.y, block3.x, '.');
+  mvaddch(block4.y, block4.x, '.');
+  refresh();
+}
+
+bool check_block_free(int x, int y)
+{
+  if (y > HEIGHT - 1 || x < 0 || x > WIDTH - 1 || board[x][y] != 0)
+    return false;
+  return true;
+}
+
+bool check_free(int newax, int neway, int newbx, int newby,
+                int newcx, int newcy, int newdx, int newdy)
+{
+  block newa; block newb; block newc; block newd;
+  newa.x = newax; newa.y = neway; newb.x = newbx; newb.y = newby;
+  newc.x = newcx; newc.y = newcy; newd.x = newdx; newd.y = newdy;
+
+  if (check_block_free(newa.x, newa.y) && check_block_free(newb.x, newb.y) 
+      && check_block_free(newc.x, newc.y) && check_block_free(newd.x, newd.y))
+    return true;
+  return false;
+}
+
+void move_down()
+{
+  unplot_piece(a,b,c,d);
+  a.y++;
+  b.y++;
+  c.y++;
+  d.y++;
+  plot_piece(a,b,c,d);
+}
+
+void move_right()
+{
+  unplot_piece(a,b,c,d);
+  a.x++;
+  b.x++;
+  c.x++;
+  d.x++;
+  plot_piece(a,b,c,d);
+}
+
+void move_left()
+{
+  unplot_piece(a,b,c,d);
+  a.x--;
+  b.x--;
+  c.x--;
+  d.x--;
+  plot_piece(a,b,c,d);
+}
+
+bool is_game_over()
+{
+  //prototype
+  return false;
+}
+
+void save_location()
+{
+  board[a.x][a.y] = 1;
+  board[b.x][b.y] = 1;
+  board[c.x][c.y] = 1;
+  board[d.x][d.y] = 1;
+}
+
+void rotate_right(int piecetype, int rotatedtimes)
+{
+  unplot_piece(a, b, c, d);
+  switch (piece_type)
+  {
+    default:;
+  }
+}
+
+void rotate_left()
+{
+}
+
+void clear_row(int row)
+{
+  for (int i = 0; i < WIDTH; i++)
+  {
+    board[row][i] = 0;
+  }
+  for (int i = row - 1; i < HEIGHT; i++)
+  {
+    for (int j = 0; j < WIDTH; j++)
+      board[i + 1][j + 1] = board[i][j];
+  }
+}
+
+void clear_lines()
+{
+  //would be more efficient to do backwards... (bottom up)
+  for (int i = 0; i < HEIGHT; i++)
+  {
+    bool sto = false;
+    for (int j = 0; j < WIDTH; j++)
+    {
+      if (board[i][j] == 0)
+      {
+        stop = true;
+        break;
+      }
+    }
+    if (! stop)
+    {
+      clear_row(i);
+    }
+  }
+}
+
+bool move()//returns false when game is over 
+{
+  clear_lines();
+  if (new_piece)
+  {
+    put_new_piece();
+    new_piece = false;
+  }
+  else if (check_free(a.x, a.y + 1, b.x, b.y + 1, c.x, c.y + 1, d.x, d.y + 1))
+    move_down();
+  else
+  {    
+    new_piece = true;
+    save_location();
+  }
+#ifdef DEBUG
+  mvprintw(0, 20, "a.x: %d", a.x);
+  mvprintw(1, 20, "a.y: %d", a.y);
+  mvprintw(2, 20, "b.x: %d", b.x);
+  mvprintw(3, 20, "b.y: %d", b.y);
+  mvprintw(4, 20, "c.x: %d", c.x);
+  mvprintw(5, 20, "c.y: %d", c.y);
+  mvprintw(6, 20, "d.x: %d", d.x);
+  mvprintw(7, 20, "d.y: %d", d.y);
+  for (int i = 0; i++ < WIDTH;)
+    for (int j = 0; j++ < HEIGHT;)
+      mvprintw(j + 8, i + 30, "%d", board[i][j]);
+  refresh();
+#endif
+  key_press_handler();
+  key_press_handler();
+  key_press_handler();
+  key_press_handler();
+  key_press_handler();
+
+  return ! is_game_over();
+}
+
+void key_press_handler()
+{
+  char ch = getch();
+#ifdef DEBUG
+  mvprintw(8, 20, "key: %d", ch);
+#endif
+  switch(ch)
+  {
+    case 4:
+     if (check_free(a.x - 1, a.y, b.x - 1, b.y, c.x - 1, c.y, d.x - 1, d.y))
+       move_left();
+     break;
+    case 5:
+     if (check_free(a.x + 1, a.y, b.x + 1, b.y, c.x + 1, c.y, d.x + 1, d.y))
+       move_right();
+     break;
+    case 2:
+      if (check_free(a.x, a.y + 1, b.x, b.y + 1, c.x, c.y + 1, d.x, d.y + 1))
+        move_down();
+      else
+        save_location();
+  }
+}
+
+void initialise_game()
+{
+  //fill up array with 0s and plot initial empty squares
+  for (int i = 0; i < WIDTH; i++)
+    for (int j = 0; j < HEIGHT; j++)
+    {
+      board[i][j] = 0;
+      mvaddch(j, i, '.');
+    }
+  refresh();
+}
+
+void initialise_curses()
+{
+  initscr();      /* Start curses mode */
+  cbreak();       /* Line buffering disabled. Pass on everything. */
+  keypad(stdscr, TRUE);
+  noecho();
+  timeout(TIME_OUT);
+  //curs_set(FALSE);
+}
+
+int main(int argc, char **argv)
+{
+  initialise_curses();
+  initialise_game();
+  //then keep looping until game is over
+  while (move())
+    ;
+
+  endwin();
+}
