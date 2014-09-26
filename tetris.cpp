@@ -28,15 +28,15 @@ struct block
 */
 
 ///////////////////////////put this into a .h file
-void plot_piece(block, block, block, block);
+void plot_piece(piece*);
 void key_press_handler();
-void unplot_piece(block, block, block, block);
+void unplot_piece(piece*);
 ////////////////////////////////////////////
 
 void put_new_piece()
 {
   Piece = new piece();
-  plot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  plot_piece(piece*);
 }
 
 bool check_block_free(int x, int y)
@@ -61,24 +61,24 @@ bool check_free(int newax, int neway, int newbx, int newby,
 
 void move_down()
 {
-  unplot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  unplot_piece(Piece);
   //want to put the following in the object
   Piece->move_down();
-  plot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  plot_piece(Piece);
 }
 
 void move_right()
 {
-  unplot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  unplot_piece(Piece);
   Piece->move_right();
-  plot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  plot_piece(Piece);
 }
 
 void move_left()
 {
-  unplot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  unplot_piece(Piece);
   Piece->move_left();
-  plot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  plot_piece(Piece);
 }
 
 bool is_game_over()
@@ -116,7 +116,7 @@ void unplot_piece(piece* given_piece)
 
 void rotate_right(int piecetype/*remove this param*/, int rotatedtimes)
 {
-  unplot_piece(Piece->a, Piece->b, Piece->c, Piece->d);
+  unplot_piece(Piece);
 /*  switch (piece_type)
   {
     default:;
