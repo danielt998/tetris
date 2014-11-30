@@ -1,0 +1,33 @@
+piece 1: XX  no rotation
+         XX
+
+piece 2: X    A    AC   ACD   D
+         XXX  BCD  B      B   B
+                   D         CA
+
+piece 3:   X     A  A        CA 
+         XXX   BCD  D   DCA   D
+                    BC  B     B
+piece 4:  X    A   A         D
+         XXX  BCD  CD  ACD  AC
+                   B    B    B
+piece 5: XX    AB    B  then repeat
+          XX    CD  DC
+                    A
+piece 6:  XX    AB   A
+         XX    CD    DC
+                      B
+
+piece 7: XXXX   ABCD  B  then repeat
+                      A
+                      C
+                      D
+
+
+
+
+piece 7(6?) works until 4th rotation
+      "               2nd
+     6                    5th
+   4 breaks at third but 4th works
+    2                    2nd

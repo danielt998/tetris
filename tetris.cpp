@@ -1,7 +1,7 @@
 #include <ncurses.h>
 #include <unistd.h>
 #include <stdlib.h>//think this is a c lib, should switch to a c++ one
-#include "piece.cxx"
+#include "piece.hxx"
 //#include <iostream>//ncurses includes this
 //time.h
 
@@ -13,30 +13,25 @@
 int board[WIDTH][HEIGHT];
 piece * Piece;
 
-//int piece_type;//?
-
-//int rotatedtimes;//this is a temporary variable which should get reset for
-//every new piece
-
 bool new_piece = true;
-/*Don't think we want this here as it is now part of Piece
+/*
 struct block
 {
   int x;
   int y;
-};
-*/
+};*/
 
 ///////////////////////////put this into a .h file
 void plot_piece(piece*);
 void key_press_handler();
 void unplot_piece(piece*);
+bool check_free(int, int, int, int, int, int, int, int);
 ////////////////////////////////////////////
 
 void put_new_piece()
 {
   Piece = new piece();
-  plot_piece(piece*);
+  plot_piece(Piece);
 }
 
 bool check_block_free(int x, int y)
@@ -46,6 +41,14 @@ bool check_block_free(int x, int y)
   return true;
 }
 
+bool check_piece_free(piece * p)
+{
+  return check_free(p->a.x, p->a.y, p->b.x, p->b.y, p->c.x, p->c.y,
+                                                    p->d.x, p->d.y);
+}
+
+//probably want to make all pieces use check_piece_free, instance method
+//to move down one etc.
 bool check_free(int newax, int neway, int newbx, int newby,
                 int newcx, int newcy, int newdx, int newdy)
 {
@@ -62,7 +65,6 @@ bool check_free(int newax, int neway, int newbx, int newby,
 void move_down()
 {
   unplot_piece(Piece);
-  //want to put the following in the object
   Piece->move_down();
   plot_piece(Piece);
 }
@@ -83,46 +85,48 @@ void move_left()
 
 bool is_game_over()
 {
-  //prototype
+  for (int i = 0; i <  WIDTH; i++)
+    if (board[0][i] == 1)
+      return true;
   return false;
 }
 
 void save_location()
 {
-  board[Piece->a.x][Piece->a.y] = 1;
-  board[Piece->b.x][Piece->b.y] = 1;
-  board[Piece->c.x][Piece->c.y] = 1;
-  board[Piece->d.x][Piece->d.y] = 1;
+  board[Piece->a.x + 1][Piece->a.y + 1] = 1;
+  board[Piece->b.x + 1][Piece->b.y + 1] = 1;
+  board[Piece->c.x + 1][Piece->c.y + 1] = 1;
+  board[Piece->d.x + 1][Piece->d.y + 1] = 1;
 }
 
 //put these into one with char as a parameter?
 void plot_piece(piece* given_piece)
 {
-  mvaddch(given_piece.y, given_piece.x, 'X');
-  mvaddch(given_piece.y, given_piece.x, 'X');
-  mvaddch(given_piece.y, given_piece.x, 'X');
-  mvaddch(given_piece.y, given_piece.x, 'X');
+  mvaddch(given_piece->a.y, given_piece->a.x, 'X');
+  mvaddch(given_piece->b.y, given_piece->b.x, 'X');
+  mvaddch(given_piece->c.y, given_piece->c.x, 'X');
+  mvaddch(given_piece->d.y, given_piece->d.x, 'X');
   refresh();
 }
   
 void unplot_piece(piece* given_piece)
 { 
-  mvaddch(given_piece.y, given_piece.x, '.');
-  mvaddch(given_piece.y, given_piece.x, '.');
-  mvaddch(given_piece.y, given_piece.x, '.');
-  mvaddch(given_piece.y, given_piece.x, '.');
+  mvaddch(given_piece->a.y, given_piece->a.x, '.');
+  mvaddch(given_piece->b.y, given_piece->b.x, '.');
+  mvaddch(given_piece->c.y, given_piece->c.x, '.');
+  mvaddch(given_piece->d.y, given_piece->d.x, '.');
   refresh();
 }
 
-void rotate_right(int piecetype/*remove this param*/, int rotatedtimes)
+void rotate_right()
 {
-  unplot_piece(Piece);
-/*  switch (piece_type)
+  //some code to check for collisions here
+  if (check_piece_free(Piece->get_rotated_right_position()))
   {
-    default:;
+    unplot_piece(Piece);
+    Piece->rotatepiece();
+    plot_piece(Piece);
   }
-*/
-
 }
 
 void rotate_left()
@@ -171,7 +175,8 @@ bool move()//returns false when game is over
     put_new_piece();
     new_piece = false;
   }
-  else if (check_free(Piece->a.x, Piece->a.y + 1, Piece->b.x, Piece->b.y + 1, Piece->c.x, Piece->c.y + 1, Piece->d.x, Piece->d.y + 1))
+  else if (check_free(Piece->a.x, Piece->a.y + 1, Piece->b.x, Piece->b.y + 1,
+                      Piece->c.x, Piece->c.y + 1, Piece->d.x, Piece->d.y + 1))
     move_down();
   else
   {    
@@ -209,19 +214,27 @@ void key_press_handler()
 #endif
   switch(ch)
   {
-    case 4:
-     if (check_free(Piece->a.x - 1, Piece->a.y, Piece->b.x - 1, Piece->b.y, Piece->c.x - 1, Piece->c.y, Piece->d.x - 1, Piece->d.y))
+    case 4://left arrow key
+     if (check_free(Piece->a.x - 1, Piece->a.y, Piece->b.x - 1, Piece->b.y,
+                    Piece->c.x - 1, Piece->c.y, Piece->d.x - 1, Piece->d.y))
        move_left();
      break;
-    case 5:
-     if (check_free(Piece->a.x + 1, Piece->a.y, Piece->b.x + 1, Piece->b.y, Piece->c.x + 1, Piece->c.y, Piece->d.x + 1, Piece->d.y))
+    case 5://right arrow key
+     if (check_free(Piece->a.x + 1, Piece->a.y, Piece->b.x + 1, Piece->b.y,
+                    Piece->c.x + 1, Piece->c.y, Piece->d.x + 1, Piece->d.y))
        move_right();
      break;
-    case 2:
-      if (check_free(Piece->a.x, Piece->a.y + 1, Piece->b.x, Piece->b.y + 1, Piece->c.x, Piece->c.y + 1, Piece->d.x, Piece->d.y + 1))
+    case 2://down arrow key
+      if (check_free(Piece->a.x, Piece->a.y + 1, Piece->b.x, Piece->b.y + 1,
+                     Piece->c.x, Piece->c.y + 1, Piece->d.x, Piece->d.y + 1))
         move_down();
       else
         save_location();
+      break;
+    case 3://up arrow key
+      if (true /*add a check here*/)
+        rotate_right();
+      break;
   }
 }
 

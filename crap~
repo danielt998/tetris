@@ -30,47 +30,99 @@
       ++block3X;
       --block4Y;
       rotatedtimes = 2;
+
     }
+
+
+
     if (rotatedtimes == 0)
+
     {
+
       block1X = block1X + 2;
+
+
+
       ++block2X;
+
       --block2Y;
+
+
+
       --block4X;
+
       ++block4Y;
+
       //goes into bottom
--2, -1-0,       rotatedtimes = 1;
+
+      rotatedtimes = 1;
+
     }
+
+
+
   }//end piecetype == 2 (not 1)!!
+
+
+
   if(piecetype == 3)
+
   {
+
     if(rotatedtimes == 3)
+
     {
+
       --block2X;
+
       ++block2Y;
+
       block1X = block1X + 2;
+
       --block4Y;
+
       ++block4X;
+
       rotatedtimes = 98;
+
     }
+
     if(rotatedtimes == 2)
+
     {
+
       block1Y = block1Y - 2;
+
       ++block2X;
+
       --d;
+
       --block4X;
+
       ++block4Y;
+
       rotatedtimes = 3;
+
     }
+
     if(rotatedtimes == 1)
+
     {
+
       block1X = block1X - 2;
+
       --block2X;
+
       --block2Y;
+
       ++block4X;
+
       ++block4Y;
+
       rotatedtimes = 2;
+
     }
+
     if(rotatedtimes == 0)
 
     {

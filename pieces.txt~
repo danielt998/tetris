@@ -1,0 +1,19 @@
+piece 1: XX
+         XX
+
+piece 2: X
+         XXX
+
+piece 3:   X     A  A         D
+         XXX   BCD  C   ACD   C
+                    BD  B    AB
+piece 4:  X    A   A         D
+         XXX  BCD  CD  ACD  AC
+                   B    B    B
+piece 5: XX    AB    B  
+          XX    CD  DC
+                    A
+piece 6:  XX
+         XX
+
+piece 7: XXXX
