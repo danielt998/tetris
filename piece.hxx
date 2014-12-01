@@ -22,11 +22,13 @@ class piece
     void move_right();
     piece* get_rotated_right_position();
     piece* get_rotated_left_position();
+    char* debuginfo;
 
   private:
-    int rotatedtimes = 0;
+    int rotatedtimes;
     int piece_type;//public?
-    void add_rot_mat(int **mat/* int mat[][8]*/);
+    void add_rot_mat(int/* int mat[][8]*/);
     int** get_mat(int);
+    int (*get_mat_2(int))[8];
 };
 

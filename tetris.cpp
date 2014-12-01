@@ -120,11 +120,19 @@ void unplot_piece(piece* given_piece)
 
 void rotate_right()
 {
+mvprintw(29, 0, "rotate_right entered");
+refresh();
   //some code to check for collisions here
   if (check_piece_free(Piece->get_rotated_right_position()))
   {
+mvprintw(29, 1, "rotate_right_if entered");
+refresh();
     unplot_piece(Piece);
+mvprintw(29, 1, "rotate_right_piece->unplot_piece() entered");
+refresh();
     Piece->rotatepiece();
+mvprintw(29, 1, "rotate_right_piece->rotatepiece() entered");
+refresh();
     plot_piece(Piece);
   }
 }
@@ -208,6 +216,7 @@ bool move()//returns false when game is over
 
 void key_press_handler()
 {
+
   char ch = getch();
 #ifdef DEBUG
   mvprintw(8, 20, "key: %d", ch);
